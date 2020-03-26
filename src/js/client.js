@@ -1,6 +1,6 @@
 "use strict"; /* eslint-env browser */ /* global */ /* eslint no-warning-comments: [1, { "terms": ["todo", "fix", "help"], "location": "anywhere" }] */
-const debug = true;
-var highScore, sessionScore = 0;
+const debug = false;
+var gameStopped, highScore, sessionScore = 0;
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 function getRandomArbitrary (min, max) {
@@ -121,14 +121,14 @@ $(document).ready(function () {
 		// Collision Code
 		// http://phaser.io/tutorials/making-your-first-phaser-3-game/part8
 		// this.physics.add.collider(game.man, game.covid);
-		this.physics.add.overlap(game.man, game.covidGroup, infected, null, this);
+		this.physics.add.overlap(game.man, game.covidGroup, infected.bind(null, this), null, this);
 
 		// Timers
 		// Increase covid speed every 3 seconds
-		var covidSpeedIncreaser = setInterval(increaseCovidSpeed, 3000);
+		game.covidSpeedIncreaser = setInterval(increaseCovidSpeed, 3000);
 
 		// Drop some toilet paper every so often
-		var toiletPaperSpawnTimer = setInterval(spawnToiletPaper.bind(null, this), 3000);
+		game.toiletPaperSpawnTimer = setInterval(spawnToiletPaper.bind(null, this), 3000);
 	}
 
 	function update () {
@@ -142,7 +142,7 @@ $(document).ready(function () {
 			game.man.body.velocity.setTo(0, 0);
 		} else {
 			// http://labs.phaser.io/view.html?src=src/physics\arcade\move%20to%20pointer.js
-			this.physics.moveToObject(game.man, this.input.activePointer, game.data.manSpeed);
+			!gameStopped && this.physics.moveToObject(game.man, this.input.activePointer, game.data.manSpeed);
 		}
 	}
 
@@ -151,7 +151,7 @@ $(document).ready(function () {
 		// Extra random delay
 		setTimeout(function () {
 			var toilet = game.toiletGroup.create(game.innerFrame.x + (window.innerWidth * getRandomArbitrary(0, 0.8)), -40, "toiletpaper");
-			phaserObj.physics.add.existing(toilet);
+			!gameStopped && phaserObj.physics.add.existing(toilet); // Make sure game is still running, since the setInterval might have started right before game ended
 
 			toilet.displayWidth = 40;
 			toilet.displayHeight = 38;
@@ -160,7 +160,6 @@ $(document).ready(function () {
 			// Collision Detection -- when collision happens with this instance of toilet paper, then remove it & update score
 			phaserObj.physics.add.overlap(game.man, toilet, function () {
 				toilet.destroy(); // Get rid of the toilet paper sprite
-				phaserObj.pause()
 				updateScore();
 			}, null, this);
 		}, getRandomInt(0, 3000));
@@ -177,8 +176,25 @@ $(document).ready(function () {
 	}
 
 	// Function runs when man sprite overlaps a covid sprite
-	function infected () {
+	function infected (phaserObj) {
 		// Game Over! Man touched Covid
 		debug && console.log("Game over!");
+		gameStopped = true;
+		// Kill the Timers
+		clearInterval(game.covidSpeedIncreaser);
+		clearInterval(game.toiletPaperSpawnTimer);
+
+		// Stop all Movement
+		game.man.body.acceleration.setTo(0, 0);
+		game.man.body.velocity.setTo(0, 0);
+		for (var i = 0; i < game.covidGroup.getChildren().length; i++) {
+			game.covidGroup.getChildren()[i].body.velocity.x = 0;
+			game.covidGroup.getChildren()[i].body.velocity.y = 0;
+		}
+		for (var i = 0; i < game.toiletGroup.getChildren().length; i++) {
+			game.toiletGroup.getChildren()[i].body.velocity.x = 0;
+			game.toiletGroup.getChildren()[i].body.velocity.y = 0;
+			game.toiletGroup.getChildren()[i].body.gravity.setTo(0, 0);
+		}
 	}
 });

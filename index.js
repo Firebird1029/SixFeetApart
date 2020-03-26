@@ -7,7 +7,7 @@ var debug = false;
  * TODO
  *
  * Overlay: instructions (intro screen),
- * phaser game over
+ * Game over w/ restart button
  *
  * Change increaser speed back to 2 sec/3 sec
  * Host on GH/Heroku/DigitalOcean
