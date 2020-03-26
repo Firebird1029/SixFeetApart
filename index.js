@@ -4,6 +4,16 @@ var debug = false;
 /*
  * Notes
  *
+ * TODO
+ *
+ * Overlay: instructions (intro screen), score
+ * Localhost keep score, phaser game over
+ *
+ * Change increaser speed back to 2 sec/3 sec
+ * Host on GH/Heroku/DigitalOcean
+ * Domain
+ * Google Analytics
+ *
  * Resources:
  * https://bulma.io/documentation/
  * https://pugjs.org/api/getting-started.html
