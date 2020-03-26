@@ -5,17 +5,6 @@ var gameStopped, highScore, startCursorMovement = false;
 	var game = {};
 	game.data = {};
 
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-function getRandomArbitrary (min, max) {
-	return Math.random() * (max - min) + min;
-}
-
-function getRandomInt (min, max) {
-	min = Math.ceil(min);
-	max = Math.floor(max);
-	return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 // Navbar Burger
 $(document).ready(function () {
 	// Get high score
@@ -24,6 +13,10 @@ $(document).ready(function () {
 	} else {
 		highScore = 0;
 	}
+
+	// Set Random Game Over Message
+	var randomGameOverMsgs = ["Crikey!", "Oh no!", "Yikes!", "Oops-a-daisy!", "Ouch!", "Ruh roh!", "Heavens, no."]
+	$("#gameOverText").text(randomGameOverMsgs[_.random(0, randomGameOverMsgs.length-1)] + " You've been hit!");
 
 	// Phaser
 	var config = {
@@ -117,7 +110,7 @@ $(document).ready(function () {
 			covid.displayWidth = 30;
 			covid.displayHeight = 30;
 			covid.body.setCircle(90, 40, 40); // Why is radius (100) > display size??
-			covid.setVelocity(getRandomInt(100, 200), getRandomInt(100, 200));
+			covid.setVelocity(_.random(100, 200), _.random(100, 200));
 			covid.setBounce(1, 1);
 			covid.setCollideWorldBounds(true);
 			covid.setGravity(0, 0);
@@ -177,7 +170,7 @@ $(document).ready(function () {
 	function spawnToiletPaper (phaserObj) {
 		// Extra random delay
 		setTimeout(function () {
-			var toilet = game.toiletGroup.create(game.innerFrame.x + (window.innerWidth * getRandomArbitrary(0, 0.8)), -40, "toiletpaper");
+			var toilet = game.toiletGroup.create(game.innerFrame.x + (window.innerWidth * _.random(0, 0.8)), -40, "toiletpaper");
 			!gameStopped && phaserObj.physics.add.existing(toilet); // Make sure game is still running, since the setInterval might have started right before game ended
 
 			toilet.displayWidth = 40;
@@ -189,14 +182,14 @@ $(document).ready(function () {
 				toilet.destroy(); // Get rid of the toilet paper sprite
 				updateScore();
 			}, null, this);
-		}, getRandomInt(0, 3000));
+		}, _.random(0, 3000));
 	}
 
 	// Function runs every 3 seconds to increase speed of each covid
 	function increaseCovidSpeed () {
 		for (var i = 0; i < game.covidGroup.getChildren().length; i++) {
-			game.covidGroup.getChildren()[i].body.velocity.x *= getRandomArbitrary(1.01, 1.1);
-			game.covidGroup.getChildren()[i].body.velocity.y *= getRandomArbitrary(1.01, 1.1);
+			game.covidGroup.getChildren()[i].body.velocity.x *= _.random(1.01, 1.1);
+			game.covidGroup.getChildren()[i].body.velocity.y *= _.random(1.01, 1.1);
 		}
 		if (game.data.manSpeed < 400) {
 			game.data.manSpeed *= (1.05, 1.1);

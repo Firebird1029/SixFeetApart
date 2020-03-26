@@ -4,12 +4,12 @@ html(lang="en")
 	body
 		section.section.startScreen
 			strong.strong Six Feet Apart
-			#desc Use your cursor to move. Stay six feet away from the spikey things and collect toilet paper.
+			#desc Use your cursor to move. Stay six feet apart from the spikey things and collect toilet paper.
 		.centeredOverlay#startGameScreen
 			button.button#startGameBtn Start Game!
 		.centeredOverlay#gameOverScreen.is-hidden
 			.container.has-text-centered
-				h1.title(style="background-color: white") Game Over!
+				h1.title#gameOverText(style="background-color: white")
 				br
 				button.button(onclick="window.location.reload();") Restart?
 		.game
