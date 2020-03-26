@@ -4,15 +4,9 @@ var debug = false;
 /*
  * Notes
  *
- * TODO
- *
- * Game over w/ restart button
- * Random background color
- *
- * Change increaser speed back to 2 sec/3 sec
- * Host on GH/Heroku/DigitalOcean
- * Domain
- * Google Analytics
+ * https://phaser.io/examples
+ * https://photonstorm.github.io/phaser3-docs/Phaser.Physics.Arcade.Sprite.html
+ * https://rexrainbow.github.io/phaser3-rex-notes/docs/site/arcade-body/
  *
  * Resources:
  * https://bulma.io/documentation/
