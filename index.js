@@ -6,8 +6,8 @@ var debug = false;
  *
  * TODO
  *
- * Overlay: instructions (intro screen),
  * Game over w/ restart button
+ * Random background color
  *
  * Change increaser speed back to 2 sec/3 sec
  * Host on GH/Heroku/DigitalOcean

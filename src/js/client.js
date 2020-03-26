@@ -1,6 +1,9 @@
 "use strict"; /* eslint-env browser */ /* global */ /* eslint no-warning-comments: [1, { "terms": ["todo", "fix", "help"], "location": "anywhere" }] */
 const debug = false;
-var gameStopped, highScore, sessionScore = 0;
+var gameStopped, highScore;
+// Phaser
+	var game = {};
+	game.data = {};
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 function getRandomArbitrary (min, max) {
@@ -15,27 +18,14 @@ function getRandomInt (min, max) {
 
 // Navbar Burger
 $(document).ready(function () {
-	// Init
-	$(".sessionScore").text("0");
 	// Get high score
 	if (localStorage.getItem("sixFeetApartHighScore")) {
-		$(".highScore").text(localStorage.getItem("sixFeetApartHighScore"));
+		highScore = localStorage.getItem("sixFeetApartHighScore");
 	} else {
-		$(".highScore").text("0");
+		highScore = 0;
 	}
 
-	function updateScore () {
-		sessionScore++;
-		$(".sessionScore").text(sessionScore);
-		if (sessionScore > localStorage.getItem("sixFeetApartHighScore")) {
-			localStorage.setItem("sixFeetApartHighScore", sessionScore);
-			$(".highScore").text(sessionScore);
-		}
-	}
-
-	var game = {};
-	game.data = {};
-
+	// Phaser
 	var config = {
 		type: Phaser.AUTO,
 		width: (window.innerWidth) * 1,
@@ -56,14 +46,18 @@ $(document).ready(function () {
 		}
 	};
 
-	var gameContainer = new Phaser.Game(config);
+	// Start Game
+	$("#startGameBtn").click(function () {
+		var gameContainer = new Phaser.Game(config);
+		$("#startGameScreen").remove();
+	});
 
 	function preload () {
-		// this.load.image("sky", "assets/img/space3.png");
-		// this.load.image("red", "assets/img/redParticle.png");
+		this.load.image("bg", "assets/img/bg1.jpg");
 		this.load.image("man", "assets/img/man.png");
 		this.load.image("covid", "assets/img/covid1.png");
 		this.load.image("toiletpaper", "assets/img/toiletpaper.png");
+		// this.load.image("red", "assets/img/redParticle.png");
 	}
 
 	function create () {
@@ -77,13 +71,27 @@ $(document).ready(function () {
 		// });
 		// // emitter.startFollow(game.covid);
 		
+		// Background Image
+		// game.bg = this.add.image(0, 0, "bg");
+		// game.bg.displayHeight = window.innerHeight * window.devicePixelRatio;
+		// game.bg.displayWidth = window.innerWidth * window.devicePixelRatio;
+		// game.bg.smoothed = false;
+		
+		// Scoreboard
+		game.score = 0;
+		game.scoreText = this.add.text(20, 20, "Score: 0", {color: "#000"});
+		game.highScoreText = this.add.text(20, 40, "High Score: " + highScore, {color: "#000"});
+		
 		// Main Character, the Man
 		game.man = this.physics.add.image(window.innerWidth / 2, window.innerHeight / 2, "man");
 		game.man.displayWidth = 58;
 		game.man.displayHeight = 102;
+		// game.man.body.setSize(200, 470);
+		// game.man.body.setOffset(40, 10);
 		game.man.setCollideWorldBounds(true);
 		game.man.setGravity(0, 0);
-		game.man.setAcceleration(200, 200);
+		game.man.setVelocity(0, 0);
+		// game.man.setAcceleration(200, 200);
 		game.data.manSpeed = 200;
 
 		// Generate Rectangles Where Covids Will Be Placed Outside Of
@@ -108,6 +116,7 @@ $(document).ready(function () {
 
 			covid.displayWidth = 30;
 			covid.displayHeight = 30;
+			covid.body.setCircle(90, 40, 40); // Why is radius (100) > display size??
 			covid.setVelocity(getRandomInt(100, 200), getRandomInt(100, 200));
 			covid.setBounce(1, 1);
 			covid.setCollideWorldBounds(true);
@@ -121,11 +130,11 @@ $(document).ready(function () {
 		// Collision Code
 		// http://phaser.io/tutorials/making-your-first-phaser-3-game/part8
 		// this.physics.add.collider(game.man, game.covid);
-		this.physics.add.overlap(game.man, game.covidGroup, infected.bind(null, this), null, this);
+		!debug && this.physics.add.overlap(game.man, game.covidGroup, infected.bind(null, this), null, this);
 
 		// Timers
-		// Increase covid speed every 3 seconds
-		game.covidSpeedIncreaser = setInterval(increaseCovidSpeed, 3000);
+		// Increase covid speed every 2 seconds
+		game.covidSpeedIncreaser = setInterval(increaseCovidSpeed, 2000);
 
 		// Drop some toilet paper every so often
 		game.toiletPaperSpawnTimer = setInterval(spawnToiletPaper.bind(null, this), 3000);
@@ -143,6 +152,17 @@ $(document).ready(function () {
 		} else {
 			// http://labs.phaser.io/view.html?src=src/physics\arcade\move%20to%20pointer.js
 			!gameStopped && this.physics.moveToObject(game.man, this.input.activePointer, game.data.manSpeed);
+		}
+	}
+
+	// Score Tracking Functionality
+	function updateScore () {
+		game.score++;
+		game.scoreText.text = "Score: " + game.score;
+		if (game.score > highScore) {
+			highScore = game.score;
+			localStorage.setItem("sixFeetApartHighScore", highScore);
+			game.highScoreText.text = "High Score: " + highScore;
 		}
 	}
 
@@ -169,6 +189,7 @@ $(document).ready(function () {
 	function increaseCovidSpeed () {
 		for (var i = 0; i < game.covidGroup.getChildren().length; i++) {
 			game.covidGroup.getChildren()[i].body.velocity.x *= getRandomArbitrary(1.01, 1.1);
+			game.covidGroup.getChildren()[i].body.velocity.y *= getRandomArbitrary(1.01, 1.1);
 		}
 		if (game.data.manSpeed < 400) {
 			game.data.manSpeed *= (1.05, 1.1);
@@ -187,14 +208,23 @@ $(document).ready(function () {
 		// Stop all Movement
 		game.man.body.acceleration.setTo(0, 0);
 		game.man.body.velocity.setTo(0, 0);
-		for (var i = 0; i < game.covidGroup.getChildren().length; i++) {
-			game.covidGroup.getChildren()[i].body.velocity.x = 0;
-			game.covidGroup.getChildren()[i].body.velocity.y = 0;
-		}
 		for (var i = 0; i < game.toiletGroup.getChildren().length; i++) {
 			game.toiletGroup.getChildren()[i].body.velocity.x = 0;
 			game.toiletGroup.getChildren()[i].body.velocity.y = 0;
 			game.toiletGroup.getChildren()[i].body.gravity.setTo(0, 0);
 		}
+		for (var i = 0; i < game.covidGroup.getChildren().length; i++) {
+			if (!phaserObj.physics.overlap(game.man, game.covidGroup.getChildren()[i])) {
+				// For all the covids that are NOT touching the man, destroy them
+				game.covidGroup.getChildren()[i].destroy();
+			} else {
+				// For the covid touching the man, stop it from moving
+				game.covidGroup.getChildren()[i].body.velocity.x = 0;
+				game.covidGroup.getChildren()[i].body.velocity.y = 0;
+			}
+		}
+
+		// Show Game Over Screen
+		$("#gameOverScreen").removeClass("is-hidden");
 	}
 });

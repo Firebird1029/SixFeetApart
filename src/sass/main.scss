@@ -12,3 +12,19 @@ html, body {
 	overflow-x: hidden;
 	overflow-y: hidden;
 }
+
+.startScreen {
+	position: fixed;
+	z-index: -100;
+}
+
+.centeredOverlay {
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	z-index: 100;
+}

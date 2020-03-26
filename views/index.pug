@@ -2,14 +2,16 @@ doctype html
 html(lang="en")
 	include head.pug
 	body
-		section.section(style="position: fixed")
+		section.section.startScreen
 			strong.strong Six Feet Apart
-			.overlay
-				span Current score: 
-				span.sessionScore
+			#desc Use your cursor to move. Stay six feet away from the spikey things and collect toilet paper.
+		.centeredOverlay#startGameScreen
+			button.button#startGameBtn Start Game!
+		.centeredOverlay#gameOverScreen.is-hidden
+			.container.has-text-centered
+				h1.title(style="background-color: white") Game Over!
 				br
-				span High score: 
-				span.highScore
+				button.button(onclick="window.location.reload();") Restart?
 		.game
 		include footer.pug
 		script(src="js/all.js")
