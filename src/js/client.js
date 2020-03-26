@@ -1,6 +1,6 @@
 "use strict"; /* eslint-env browser */ /* global */ /* eslint no-warning-comments: [1, { "terms": ["todo", "fix", "help"], "location": "anywhere" }] */
 const debug = false;
-var gameStopped, highScore;
+var gameStopped, highScore, startCursorMovement = false;
 // Phaser
 	var game = {};
 	game.data = {};
@@ -138,6 +138,11 @@ $(document).ready(function () {
 
 		// Drop some toilet paper every so often
 		game.toiletPaperSpawnTimer = setInterval(spawnToiletPaper.bind(null, this), 3000);
+
+		// Fix glitch where man starts moving before cursor at start of game
+		this.input.on("pointermove", function () {
+			startCursorMovement = true;
+		});
 	}
 
 	function update () {
@@ -151,7 +156,9 @@ $(document).ready(function () {
 			game.man.body.velocity.setTo(0, 0);
 		} else {
 			// http://labs.phaser.io/view.html?src=src/physics\arcade\move%20to%20pointer.js
-			!gameStopped && this.physics.moveToObject(game.man, this.input.activePointer, game.data.manSpeed);
+			if (startCursorMovement && !gameStopped) {
+				this.physics.moveToObject(game.man, this.input.activePointer, game.data.manSpeed);
+			}
 		}
 	}
 
