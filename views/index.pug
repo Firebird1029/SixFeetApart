@@ -3,8 +3,13 @@ html(lang="en")
 	include head.pug
 	body
 		section.section(style="position: fixed")
-			p hi
+			strong.strong Six Feet Apart
 			.overlay
+				span Current score: 
+				span.sessionScore
+				br
+				span High score: 
+				span.highScore
 		.game
 		include footer.pug
 		script(src="js/all.js")
