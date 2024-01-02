@@ -18,7 +18,7 @@
 	},
 	"main": "index.js",
 	"engines": {
-		"node": "^20.10.0"
+		"node": "^18"
 	},
 	"scripts": {
 		"start": "node index.js",
