@@ -5,13 +5,14 @@ var gulp = require("gulp"),
 	// autoprefixer = require("gulp-autoprefixer"),
 	// cssMin = require("gulp-cssmin"),
 	// sourcemaps = require("gulp-sourcemaps");
+const sass = require("gulp-sass")(require("sass"));
 
 gulp.task("css", function () {
 	return gulp.src(["./src/sass/main.scss"])
 	.pipe(plugins.sourcemaps.init())
-	.pipe(plugins.sass().on("error", plugins.sass.logError))
+	.pipe(sass().on("error", sass.logError))
 	.pipe(plugins.cssmin())
-	.pipe(plugins.autoprefixer())
+	// .pipe(plugins.autoprefixer())
 	.pipe(plugins.sourcemaps.write())
 	.pipe(gulp.dest("./dist/css"))
 	.pipe(browserSync.stream());
